@@ -67,7 +67,9 @@ void read_overlapping_instance(xml_node<>* node) {
             OverlappingWFC<Color> wfc(*m, options, seed);
             std::optional<Array2D<Color>> success = wfc.run();
             if (success.has_value()) {
-                write_image_png(directory_path + "results/" + name + to_string(i) + ".png", *success);
+                std::string file_path = directory_path + "results\\" + name + to_string(i) + ".png";
+                std::cout << "writing file to " << file_path << std::endl;
+                write_image_png(file_path, *success);
                 cout << name << " finished!" << endl;
                 break;
             }
