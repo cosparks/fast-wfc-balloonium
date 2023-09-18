@@ -5,9 +5,6 @@ example/wfc_demo
 # The results of the algorithm
 example/results/*
 
-# The library files
-lib/*
-
 # CMake files
 **/CMakeLists.txt.user
 **/CMakeCache.txt
@@ -19,3 +16,15 @@ lib/*
 **/compile_commands.json
 **/*.cmake
 **/_deps
+
+# Visual Studio
+.vs/
+out/
+example/.vs/
+example/out/
+
+# lib files
+src/lib/fastwfc.dll
+src/lib/fastwfc.ilk
+src/lib/fastwfc.pdb
+src/lib/fastwfc_static.lib

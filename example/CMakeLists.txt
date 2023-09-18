@@ -11,13 +11,11 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE "${DEFAULT_BUILD_TYPE}" CACHE STRING "Choose the type of build." FORCE)
 endif()
 
-find_library( FASTWFC_LIB
-  NAMES
-    fastwfc_static
-    )
+set(FAST_WFC_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/../src/lib/fastwfc_static.lib")
 
 add_executable(${PROJECT_NAME} src/lib/main.cpp)
-target_link_libraries(wfc_demo ${FASTWFC_LIB})
+target_link_libraries(wfc_demo PUBLIC ${FAST_WFC_LIBRARIES})
 
+target_include_directories(${PROJECT_NAME} PUBLIC ../src/include )
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/include>)
