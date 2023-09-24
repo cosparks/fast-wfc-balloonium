@@ -2,14 +2,6 @@ cmake_minimum_required(VERSION 3.9)
 project(fastwfc VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
-set(DEFAULT_BUILD_TYPE "Release")
-
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  message(STATUS "Setting build type to '${DEFAULT_BUILD_TYPE}' as none was specified.")
-  set(CMAKE_BUILD_TYPE "${DEFAULT_BUILD_TYPE}" CACHE STRING "Choose the type of build." FORCE)
-endif()
-
-include(GNUInstallDirs)
 
 set(SOURCE_FILES src/lib/wave.cpp src/lib/propagator.cpp src/lib/wfc.cpp)
 
@@ -27,19 +19,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 set_target_properties(${PROJECT_NAME} PROPERTIES
   VERSION ${PROJECT_VERSION}
   SOVERSION 1)
-
-install(TARGETS ${PROJECT_NAME} EXPORT FastWFCConfig
-  ARCHIVE  DESTINATION ${LIBRARY_OUTPUT_PATH}
-  LIBRARY  DESTINATION ${LIBRARY_OUTPUT_PATH}
-  RUNTIME  DESTINATION ${LIBRARY_OUTPUT_PATH})
-
-install(TARGETS ${PROJECT_NAME}_static EXPORT FastWFCStaticConfig
-  ARCHIVE  DESTINATION ${LIBRARY_OUTPUT_PATH}
-  LIBRARY  DESTINATION ${LIBRARY_OUTPUT_PATH}
-  RUNTIME  DESTINATION ${LIBRARY_OUTPUT_PATH})
-
-
-install(DIRECTORY src/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 
 export(TARGETS ${PROJECT_NAME} FILE FastWFCConfig.cmake)
 export(TARGETS ${PROJECT_NAME}_static FILE FastWFCStaticConfig.cmake)
