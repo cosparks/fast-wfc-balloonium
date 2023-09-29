@@ -35,7 +35,10 @@ std::optional<Array2D<Color>> read_image(const std::string& file_path) noexcept 
  * Write an image in the png format.
  */
 void write_image_png(const std::string& file_path, const Array2D<Color>& m) noexcept {
-  stbi_write_png(file_path.c_str(), m.width, m.height, 3, (const unsigned char*)m.data.data(),0);
+  int ret = stbi_write_png(file_path.c_str(), m.width, m.height, 3, (const unsigned char*)m.data.data(),0);
+  if (ret < 0) {
+      std::cout << "ERROR SAVING FILE!" << std::endl;
+  }
 }
 
 #endif // FAST_WFC_UTILS_IMAGE_HPP_

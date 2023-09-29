@@ -340,13 +340,13 @@ int main() {
 #ifndef __linux__
     srand(time(nullptr));
 #endif
-
+    
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
-
-    directory_path = GetCurrentWorkingDirectory();
+    std::string directory_path = GetCurrentWorkingDirectory();
     directory_path = directory_path.substr(0, directory_path.find("out"));
-    std::string samples_path = directory_path + "samples.xml";
+    // needs to be changed if this project is run from a
+    std::string samples_path = directory_path + "ext\\fast-wfc\\example\\samples.xml";
     read_config_file(samples_path);
 
     end = std::chrono::system_clock::now();
