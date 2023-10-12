@@ -44,22 +44,22 @@ private:
   /**
    * The input image. T is usually a color.
    */
-  Array2D<T> input;
+  Array2D<T> input_;
 
   /**
    * Options needed by the algorithm.
    */
-  OverlappingWFCOptions options;
+  OverlappingWFCOptions options_;
 
   /**
    * The array of the different patterns extracted from the input.
    */
-  std::vector<Array2D<T>> patterns;
+  std::vector<Array2D<T>> patterns_;
 
   /**
    * The underlying generic WFC algorithm.
    */
-  WFC wfc;
+  WFC wfc_;
 
   /**
    * Constructor initializing the wfc.
@@ -72,12 +72,12 @@ private:
       const std::pair<std::vector<Array2D<T>>, std::vector<double>> &patterns,
       const std::vector<std::array<std::vector<unsigned>, 4>>
           &propagator) noexcept
-      : input(input), options(options), patterns(patterns.first),
-        wfc(options.periodic_output, seed, patterns.second, propagator,
+      : input_(input), options_(options), patterns_(patterns.first),
+        wfc_(options.periodic_output, seed, patterns.second, propagator,
             options.get_wave_height(), options.get_wave_width()) {
     // If necessary, the ground is set.
-    if (options.ground) {
-      init_ground(wfc, input, patterns.first, options);
+    if (options_.ground) {
+      init_ground(wfc_, input, patterns.first, options);
     }
   }
 
@@ -256,41 +256,41 @@ private:
    * the pixels.
    */
   Array2D<T> to_image(const Array2D<unsigned> &output_patterns) const noexcept {
-    Array2D<T> output = Array2D<T>(options.out_height, options.out_width);
+    Array2D<T> output = Array2D<T>(options_.out_height, options_.out_width);
 
-    if (options.periodic_output) {
-      for (unsigned y = 0; y < options.get_wave_height(); y++) {
-        for (unsigned x = 0; x < options.get_wave_width(); x++) {
-          output.get(y, x) = patterns[output_patterns.get(y, x)].get(0, 0);
+    if (options_.periodic_output) {
+      for (unsigned y = 0; y < options_.get_wave_height(); y++) {
+        for (unsigned x = 0; x < options_.get_wave_width(); x++) {
+          output.get(y, x) = patterns_[output_patterns.get(y, x)].get(0, 0);
         }
       }
     } else {
-      for (unsigned y = 0; y < options.get_wave_height(); y++) {
-        for (unsigned x = 0; x < options.get_wave_width(); x++) {
-          output.get(y, x) = patterns[output_patterns.get(y, x)].get(0, 0);
+      for (unsigned y = 0; y < options_.get_wave_height(); y++) {
+        for (unsigned x = 0; x < options_.get_wave_width(); x++) {
+          output.get(y, x) = patterns_[output_patterns.get(y, x)].get(0, 0);
         }
       }
-      for (unsigned y = 0; y < options.get_wave_height(); y++) {
+      for (unsigned y = 0; y < options_.get_wave_height(); y++) {
         const Array2D<T> &pattern =
-            patterns[output_patterns.get(y, options.get_wave_width() - 1)];
-        for (unsigned dx = 1; dx < options.pattern_size; dx++) {
-          output.get(y, options.get_wave_width() - 1 + dx) = pattern.get(0, dx);
+            patterns_[output_patterns.get(y, options_.get_wave_width() - 1)];
+        for (unsigned dx = 1; dx < options_.pattern_size; dx++) {
+          output.get(y, options_.get_wave_width() - 1 + dx) = pattern.get(0, dx);
         }
       }
-      for (unsigned x = 0; x < options.get_wave_width(); x++) {
+      for (unsigned x = 0; x < options_.get_wave_width(); x++) {
         const Array2D<T> &pattern =
-            patterns[output_patterns.get(options.get_wave_height() - 1, x)];
-        for (unsigned dy = 1; dy < options.pattern_size; dy++) {
-          output.get(options.get_wave_height() - 1 + dy, x) =
+            patterns_[output_patterns.get(options_.get_wave_height() - 1, x)];
+        for (unsigned dy = 1; dy < options_.pattern_size; dy++) {
+          output.get(options_.get_wave_height() - 1 + dy, x) =
               pattern.get(dy, 0);
         }
       }
-      const Array2D<T> &pattern = patterns[output_patterns.get(
-          options.get_wave_height() - 1, options.get_wave_width() - 1)];
-      for (unsigned dy = 1; dy < options.pattern_size; dy++) {
-        for (unsigned dx = 1; dx < options.pattern_size; dx++) {
-          output.get(options.get_wave_height() - 1 + dy,
-                     options.get_wave_width() - 1 + dx) = pattern.get(dy, dx);
+      const Array2D<T> &pattern = patterns_[output_patterns.get(
+          options_.get_wave_height() - 1, options_.get_wave_width() - 1)];
+      for (unsigned dy = 1; dy < options_.pattern_size; dy++) {
+        for (unsigned dx = 1; dx < options_.pattern_size; dx++) {
+          output.get(options_.get_wave_height() - 1 + dy,
+                     options_.get_wave_width() - 1 + dx) = pattern.get(dy, dx);
         }
       }
     }
@@ -299,9 +299,9 @@ private:
   }
 
   std::optional<unsigned> get_pattern_id(const Array2D<T> &pattern) {
-    unsigned* pattern_id = std::find(patterns.begin(), patterns.end(), pattern);
+    unsigned* pattern_id = std::find(patterns_.begin(), patterns_.end(), pattern);
 
-    if (pattern_id != patterns.end()) {
+    if (pattern_id != patterns_.end()) {
       return *pattern_id;
     }
 
@@ -313,9 +313,9 @@ private:
    * pattern_id needs to be a valid pattern id, and i and j needs to be in the wave range
    */
   void set_pattern(unsigned pattern_id, unsigned i, unsigned j) noexcept {
-    for (unsigned p = 0; p < patterns.size(); p++) {
+    for (unsigned p = 0; p < patterns_.size(); p++) {
       if (pattern_id != p) {
-        wfc.remove_wave_pattern(i, j, p);
+        wfc_.remove_wave_pattern(i, j, p);
       }
     }
   }
@@ -336,7 +336,7 @@ public:
   bool set_pattern(const Array2D<T>& pattern, unsigned i, unsigned j) noexcept {
     auto pattern_id = get_pattern_id(pattern);
 
-    if (pattern_id == std::nullopt || i >= options.get_wave_height() || j >= options.get_wave_width()) {
+    if (pattern_id == std::nullopt || i >= options_.get_wave_height() || j >= options_.get_wave_width()) {
       return false;
     }
 
@@ -348,7 +348,7 @@ public:
    * Run the WFC algorithm, and return the result if the algorithm succeeded.
    */
   std::optional<Array2D<T>> run() noexcept {
-    std::optional<Array2D<unsigned>> result = wfc.run();
+    std::optional<Array2D<unsigned>> result = wfc_.run();
     if (result.has_value()) {
       return to_image(*result);
     }
