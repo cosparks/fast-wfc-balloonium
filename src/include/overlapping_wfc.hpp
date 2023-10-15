@@ -159,12 +159,12 @@ private:
 
     std::vector<Array2D<T>> symmetries(
         8, Array2D<T>(options.pattern_size, options.pattern_size));
-    unsigned max_i = options.periodic_input
+    unsigned max_i = static_cast<unsigned>(options.periodic_input
                          ? input.height
-                         : input.height - options.pattern_size + 1;
-    unsigned max_j = options.periodic_input
+                         : input.height - options.pattern_size + 1);
+    unsigned max_j = static_cast<unsigned>(options.periodic_input
                          ? input.width
-                         : input.width - options.pattern_size + 1;
+                         : input.width - options.pattern_size + 1);
 
     for (unsigned i = 0; i < max_i; i++) {
       for (unsigned j = 0; j < max_j; j++) {
@@ -185,7 +185,7 @@ private:
         // will be used.
         for (unsigned k = 0; k < options.symmetry; k++) {
           auto res = patterns_id.insert(
-              std::make_pair(symmetries[k], patterns.size()));
+              std::make_pair(symmetries[k], static_cast<unsigned>(patterns.size())));
 
           // If the pattern already exist, we just have to increase its number
           // of appearance.
@@ -209,9 +209,9 @@ private:
   static bool agrees(const Array2D<T> &pattern1, const Array2D<T> &pattern2,
                      int dy, int dx) noexcept {
     unsigned xmin = dx < 0 ? 0 : dx;
-    unsigned xmax = dx < 0 ? dx + pattern2.width : pattern1.width;
+    unsigned xmax = static_cast<unsigned>(dx < 0 ? dx + pattern2.width : pattern1.width);
     unsigned ymin = dy < 0 ? 0 : dy;
-    unsigned ymax = dy < 0 ? dy + pattern2.height : pattern1.width;
+    unsigned ymax = static_cast<unsigned>(dy < 0 ? dy + pattern2.height : pattern1.width);
 
     // Iterate on every pixel contained in the intersection of the two pattern.
     for (unsigned y = ymin; y < ymax; y++) {
